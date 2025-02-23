@@ -1,0 +1,33 @@
+{
+  "name": "br.com.trabalhoes.casaautomatica",
+  "displayName": "Casa Automática",
+  "version": "1.0.0",
+  "description": "Teste",
+  "main": "index.js",
+  "dependencies": {
+    "@capacitor/cli": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
+    "@expo/metro-runtime": "~4.0.1",
+    "expo": "~52.0.37",
+    "expo-status-bar": "~2.0.1",
+    "framework7": "^8.3.4",
+    "framework7-react": "^8.3.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-web": "~0.19.13"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "André Luiz Casarim Leite",
+  "license": "CA-1.0",
+  "devDependencies": {
+    "cordova-android": "^13.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  }
+}
