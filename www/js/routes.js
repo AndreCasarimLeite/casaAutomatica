@@ -18,7 +18,7 @@ window.app = new Framework7({
   // Add default routes
   routes: [
     {
-      path: '/login/',
+      path: 'login',
       url: 'login.html',
       animate: false,
 	  on: {
@@ -37,7 +37,7 @@ window.app = new Framework7({
 	  }
     },
     {
-      path: '/index/',
+      path: 'index',
       url: 'index.html',
       animate: false,
 	  on: {
@@ -56,7 +56,7 @@ window.app = new Framework7({
 	  }
     },
     {
-      path: '/add/',
+      path: 'add',
       url: 'add.html',
       animate: false,
 	  on: {
@@ -97,10 +97,10 @@ window.app = new Framework7({
   // ... other parameters
 });
 window.mainView = window.app.views.create('.view-main', {
-  url: '/login/', // Define a página inicial como login
+  url: 'login', // Define a página inicial como login
 });
 //Para testes direto no navegador
-//var mainView = app.views.create('.view-main', { url: '/login/' });
+//var mainView = app.views.create('.view-main', { url: 'login' });
 
 //EVENTO PARA SABER O ITEM DO MENU ATUAL
 app.on('routeChange', function (route) {
@@ -118,12 +118,12 @@ app.on('routeChange', function (route) {
 
 function onDeviceReady() {
   //Quando estiver rodando no celular
-  var mainView = app.views.create('.view-main', { url: '/login/' });
+  var mainView = app.views.create('.view-main', { url: 'login' });
 
   //COMANDO PARA "OUVIR" O BOTAO VOLTAR NATIVO DO ANDROID 	
   document.addEventListener("backbutton", function (e) {
 
-    if (mainView.router.currentRoute.path === '/index/' || mainView.router.currentRoute.path === '/login/') {
+    if (mainView.router.currentRoute.path === 'index' || mainView.router.currentRoute.path === 'login') {
       e.preventDefault();
       app.dialog.confirm('Deseja sair do aplicativo?', function () {
         navigator.app.exitApp();
@@ -138,7 +138,7 @@ function onDeviceReady() {
 function initApp() {
   // Configuração comum
   window.mainView = window.app.views.create('.view-main', {
-      url: isMobileApp() ? '/login/' : getInitialWebRoute()
+      url: isMobileApp() ? 'login' : getInitialWebRoute()
   });
 
   app.on('routeChange', function (route) {
@@ -153,7 +153,7 @@ function initMobileFeatures() {
   // Configurações específicas para mobile
   document.addEventListener("backbutton", function (e) {
       const currentPath = mainView.router.currentRoute.path;
-      if (['/index/', '/login/'].includes(currentPath)) {
+      if (['index', 'login'].includes(currentPath)) {
           e.preventDefault();
           app.dialog.confirm('Deseja sair do aplicativo?', () => navigator.app.exitApp());
       } else {
@@ -166,12 +166,16 @@ function initMobileFeatures() {
 function initWebFeatures() {
   // Configurações específicas para web
   const isAuthenticated = localStorage.getItem('usuarioAutenticado');
-  if (!isAuthenticated && window.location.pathname !== '/login/') {
-      app.views.main.router.navigate('/login/');
+  if (!isAuthenticated && window.location.pathname !== 'login') {
+      app.views.main.router.navigate('login');
   }
 }
 
 function getInitialWebRoute() {
-  // Lógica para determinar rota inicial na web
-  return localStorage.getItem('usuarioAutenticado') ? '/index/' : '/login/';
+  return localStorage.getItem('token') ? 'index' : 'login';
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  window.app.views.main.router.navigate('login');
 }
