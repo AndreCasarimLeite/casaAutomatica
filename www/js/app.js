@@ -16,53 +16,67 @@ btnSignup.addEventListener("click", function () {
 })
 
 // Validação para Registro
-async function validateSignup(e) {
+document.addEventListener('DOMContentLoaded', async function() {
+    const signupForm = document.getElementById('signupForm');
     
-    e.preventDefault();
-    const form = document.getElementById('signupForm');
-    
-    const name = document.getElementById('signUp-id').value;
-    const email = document.getElementById('signUp-email').value;
-    const password = document.getElementById('signUp-pass').value;
+    if (signupForm) {
+        
+        signupForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnRegistrar = document.getElementById('btnsignup');
+            const originalBtnText = btnRegistrar.textContent;
+            try {
+                // Desativar botão durante a requisição
+                btnRegistrar.disabled = true;
+                btnRegistrar.textContent = 'Registrando...';
+                
+                // Coletar dados
+                const userData = {
+                    nome: document.getElementById('signUp-id').value,
+                    email: document.getElementById('signUp-email').value,
+                    senha: document.getElementById('signUp-pass').value
+                };
 
-    // Validação básica
-    if (!name || !email || !password) {
-        window.app.dialog.alert('Preencha todos os campos!');
-        return false;
-    }
+                // Validação
+                if (!userData.nome || !userData.email || !userData.senha) {
+                    throw new Error('Preencha todos os campos!');
+                }
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
-        window.app.dialog.alert('Email inválido!');
-        return false;
-    }
+                if (!/\S+@\S+\.\S+/.test(userData.email)) {
+                    throw new Error('Email inválido!');
+                }
 
-    if (password.length < 6) {
-        window.app.dialog.alert('A senha deve ter pelo menos 6 caracteres!');
-        return false;
-    }
+                if (userData.senha.length < 6) {
+                    throw new Error('A senha deve ter pelo menos 6 caracteres!');
+                }
+                console.log("pos dados");
+                // Chamada à API
+                const response = await fetchAPI('/user', 'POST', userData);
+                console.log("pos API");
+                if (!response.id) {
+                    throw new Error('Erro no registro: ' + (response.message || 'Tente novamente'));
+                }
 
-    // Chamada à API
-    try {
-        const response = await fetchAPI('/user', 'POST', {
-            nome: name,
-            email,
-            senha: password
+                // Sucesso
+                window.app.dialog.alert('Cadastro realizado!', () => {
+                    localStorage.setItem('token', response.token);
+                    window.location.href = "index.html";
+                    window.app.views.main.router.navigate('/index/');
+                });
+
+            } catch (error) {
+                
+                window.app.dialog.alert(error.message);
+            } finally {
+                // Restaurar botão
+                btnRegistrar.disabled = false;
+                btnRegistrar.textContent = originalBtnText;
+            }
         });
-
-        if (response.id) {
-            window.app.dialog.alert('Cadastro realizado! Redirecionando...', () => {
-                localStorage.setItem('token', response.token);
-                window.location.href = "index.html";
-                window.app.views.main.router.navigate('index');
-            });
-            return true;
-        }
-
-    } catch (error) {
-        window.app.dialog.alert(error.message || 'Erro no cadastro');
-        return false;
     }
-}
+});
+
 //Validação para login
 async function validateLogin(e) {
     e.preventDefault();
@@ -80,15 +94,9 @@ async function validateLogin(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    
-    const signupForm = document.getElementById('signupForm');
     const loginForm = document.getElementById('loginForm');
-    if (!form) {
-        console.log("qualquer");
+    if (loginForm) {
         loginForm.addEventListener('submit', validateLogin);
-    }
-    else{
-        loginForm.addEventListener('submit', validateSignup);
     }
 });
 
